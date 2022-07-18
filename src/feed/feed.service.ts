@@ -35,6 +35,19 @@ export class FeedService {
     return feeds;
   }
 
+  async findAllByDate(search) {
+    let search2 = {
+      $and:
+        [
+          { createdAt: { $gte: search.fechaIn } },
+          { createdAt: { $lte: search.fechaOut } }
+        ]
+    };
+
+    const feeds = await this.mongoService.getItemsBy(search2);
+    return feeds;
+  }
+
   async findOne(deviceId: string) {
     const feed = await this.mongoService.getItemBy({ deviceId });
     return feed;
