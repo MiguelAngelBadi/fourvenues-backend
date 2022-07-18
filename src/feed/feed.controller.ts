@@ -13,6 +13,11 @@ export class FeedController {
     return this.feedService.create(createFeedDto);
   }
 
+  @Get('/obtainFeeds')
+  obtainFeed() {
+    return this.feedService.obtainFeeds();
+  }
+
   @Get()
   findAll() {
     return this.feedService.findAll();
