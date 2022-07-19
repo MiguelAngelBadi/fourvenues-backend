@@ -26,13 +26,13 @@ export class FeedController {
   @Get('byDate')
   @ApiQuery({
     name: 'fechaOut',
-    example: "2022-07-14T00:00:00.000Z",
+    example: "2022-07-19T00:00:00.000Z",
     description: 'The kind of the sms that wants to fetch',
     required: false
   })
   @ApiQuery({
     name: 'fechaIn',
-    example: "2022-07-13T00:00:00.000Z",
+    example: "2022-07-20T00:00:00.000Z",
     description: 'The kind of the sms that wants to fetch',
     required: false
   })

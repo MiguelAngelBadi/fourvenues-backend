@@ -9,8 +9,6 @@ services:
     command: yarn start:debug
     ports:
       - 8000:8000
-    # networks:
-    #   - fourvenues-network
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -21,13 +19,7 @@ services:
     container_name: mongo-service
     ports:
       - 27017:27017
-    # networks:
-    #   - fourvenues-network
     env_file: ./src/config/environments/.env.development
-    # environment:
-    #   MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
-      # MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
     volumes:
       - mongodb:/data/db
 
@@ -36,18 +28,9 @@ services:
     container_name: mongo-express
     ports:
       - 8081:8081
-    # networks:
-    #   - fourvenues-network
     env_file: ./src/config/environments/.env.development
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo-service
-      # ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_USER}
-      # ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_PASS}
-      # ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
-      # ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASS}
-      # ME_CONFIG_MONGODB_URL: ${MONGODB_URI}
 
 volumes:
   mongodb:
-# networks:
-#   fourvenues-network:
