@@ -23,17 +23,22 @@ export class FeedController {
     return this.feedService.findAll();
   }
 
+  @Get('today')
+  findAllToday() {
+    return this.feedService.findAllToday();
+  }
+
   @Get('byDate')
   @ApiQuery({
     name: 'fechaOut',
     example: "2022-07-19T00:00:00.000Z",
-    description: 'The kind of the sms that wants to fetch',
+    description: 'The kind of the date that wants to fetch',
     required: false
   })
   @ApiQuery({
     name: 'fechaIn',
     example: "2022-07-20T00:00:00.000Z",
-    description: 'The kind of the sms that wants to fetch',
+    description: 'The kind of the date that wants to fetch',
     required: false
   })
   findAllByDate(@Query('fechaIn') fechaIn, @Query('fechaOut') fechaOut) {

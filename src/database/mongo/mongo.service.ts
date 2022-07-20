@@ -9,8 +9,8 @@ export class MongoService {
     return createdItem;
   }
 
-  async getItemsBy(search) {
-    const items = await this.model.find(search).exec();
+  async getItemsBy(search, options) {
+    const items = await this.model.find(search).limit(options.limit).exec();
     return items;
   }
 

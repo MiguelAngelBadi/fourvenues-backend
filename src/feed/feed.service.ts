@@ -31,7 +31,39 @@ export class FeedService {
   }
 
   async findAll() {
-    const feeds = await this.mongoService.getItemsBy({});
+    let search = {};
+    let options = {};
+
+    const feeds = await this.mongoService.getItemsBy(search, options);
+    return feeds;
+  }
+
+  async findAllToday() {
+    let today = new Date();
+    let fechaIn = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    let fechaOut = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    let searchElPais = {
+      $and:
+        [
+          { createdAt: { $gte: fechaIn } },
+          { createdAt: { $lte: fechaOut } },
+          { url: process.env.URLELPAIS }
+        ]
+    };
+    let searchElMundo = {
+      $and:
+        [
+          { createdAt: { $gte: fechaIn } },
+          { createdAt: { $lte: fechaOut } },
+          { publisher: process.env.URLELMUNDO }
+        ]
+    };
+    let options = {
+      limit: 5
+    }
+    const feedsElPais = await this.mongoService.getItemsBy(searchElPais, options);
+    const feedsElMundo = await this.mongoService.getItemsBy(searchElMundo, options);
+    const feeds = feedsElPais.concat(feedsElMundo);
     return feeds;
   }
 
@@ -44,7 +76,8 @@ export class FeedService {
         ]
     };
 
-    const feeds = await this.mongoService.getItemsBy(search2);
+    let options = {};
+    const feeds = await this.mongoService.getItemsBy(search2, options);
     return feeds;
   }
 
@@ -67,7 +100,7 @@ export class FeedService {
 let obtainFeeds = async (): Promise<Array<FeedI>> => {
   const feeds = [];
 
-  let url = "https://elpais.com";
+  let url = process.env.URLELPAIS;
   let data = await axios.get(url);
   let html = cheerio.load(data.data);
   let listItems = html("main");
@@ -75,7 +108,7 @@ let obtainFeeds = async (): Promise<Array<FeedI>> => {
   const divPortadaElPais = html(listItems.children("div")[0]);
   obtainCoverFeeds(divPortadaElPais);                               // FUNCION RECURSIVA PARA OBTENER LOS FEEDS DE LA PORTADA
 
-  url = "https://www.elmundo.es/";
+  url = process.env.URLELMUNDO;
   data = await axios.get(url);
   html = cheerio.load(data.data);
   listItems = html("main");
@@ -96,22 +129,22 @@ let obtainFeeds = async (): Promise<Array<FeedI>> => {
 
         function obtainCoverFeedsFields(listTitle) {
           listTitle.each((idx2, el2) => {
-            switch (el2.name) { 
+            switch (el2.name) {
               case 'img':                                             // LA IMAGEN SE OBTIENE DE IMG
                 feed.image = el2.attribs.src;
                 break;
               case 'header':                                          // EL TITULO SE OBTIENE DE HEADER
-                feed.title = html(el2).text(); 
+                feed.title = html(el2).text();
 
                 obtainCoverFeedsFieldsSource(html(el2).children()); // FUNCION RECURSIVA PARA OBTENER EL SOURCE PARA CADA ARTICULO
                 break;
-                
+
                 function obtainCoverFeedsFieldsSource(listTitle) {
                   listTitle.each((idx3, el3) => {
                     if (el3.name === "a") {                           // EL SOURCE SE OBTIENE DE a
-                      if(el3.attribs.href.includes(url)){             // EL MUNDO VA CON URL
-                        feed.source = el3.attribs.href; 
-                      }else{
+                      if (el3.attribs.href.includes(url)) {             // EL MUNDO VA CON URL
+                        feed.source = el3.attribs.href;
+                      } else {
                         feed.source = url + el3.attribs.href;         // EL PAIS VA SIN URL                             
                       }
                     } else {
@@ -119,7 +152,7 @@ let obtainFeeds = async (): Promise<Array<FeedI>> => {
                     }
                   });
                 } // FIN obtainFeedsPortadaFieldsSource
-                
+
               case 'p':                                               // EL BODY SE OTIENE DE P (SOLO TIENE EL PAIS)
                 feed.body = html(el2).text();
                 break;
